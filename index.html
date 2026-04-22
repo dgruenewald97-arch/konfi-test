@@ -1070,7 +1070,7 @@ function updateProgressBar() {
     if (!el) continue;
     el.classList.remove('active','done','disabled');
     if (i === S.step) el.classList.add('active');
-    else if (i < S.step) el.classList.add('done');
+    else if (stepAllowed(i)) el.classList.add('done');
     else el.classList.add('disabled');
   }
 }
@@ -1078,8 +1078,13 @@ function updateProgressBar() {
 /* =============================================
    NAVIGATION
 ============================================= */
+function stepAllowed(n) {
+  if (n === 0) return true;
+  return S.variant !== null;
+}
+
 function goStep(n) {
-  if (n >= 1 && !S.variant) { goStep(0); return; }
+  if (!stepAllowed(n)) { goStep(0); return; }
 
   S.step = n;
   document.querySelectorAll('.step-section').forEach((el, i) => {
@@ -1098,7 +1103,7 @@ function goStep(n) {
 document.querySelectorAll('.progress-step').forEach(el => {
   el.addEventListener('click', () => {
     const target = parseInt(el.dataset.goto);
-    if (!el.classList.contains('disabled')) goStep(target);
+    if (stepAllowed(target)) goStep(target);
   });
 });
 
